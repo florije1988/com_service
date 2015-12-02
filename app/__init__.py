@@ -14,7 +14,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello_world():
-    return 'Hello World!'
+    return gunicorn.__version__
 
 
 @app.route('/favicon.ico')
