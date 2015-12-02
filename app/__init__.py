@@ -28,7 +28,8 @@ def hello_world():
         app.logger.warn('Info')
     except Exception as e:
         res = e.message
-    return res
+    import datetime
+    return datetime.datetime.now()
 
 
 @app.route('/favicon.ico')
