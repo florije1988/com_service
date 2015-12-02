@@ -29,7 +29,9 @@ def hello_world():
     except Exception as e:
         res = e.message
     import datetime
-    return datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S %Z')
+    current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S %Z')
+    app.logger.warn(current_time)
+    return current_time
 
 
 @app.route('/favicon.ico')
