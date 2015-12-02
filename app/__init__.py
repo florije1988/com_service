@@ -2,6 +2,8 @@
 __author__ = 'florije'
 
 import os
+import logging
+from logging.handlers import RotatingFileHandler
 from flask import Flask, send_from_directory
 from redis import Redis
 from celery import Celery
@@ -11,9 +13,14 @@ print gunicorn.__version__
 
 app = Flask(__name__)
 
+handler = RotatingFileHandler('foo.log', maxBytes=10000, backupCount=1)  # TimedRotatingFileHandler
+handler.setLevel(logging.INFO)
+app.logger.addHandler(handler)
+
 
 @app.route('/')
 def hello_world():
+    app.logger.info('Info')
     return gunicorn.__version__
 
 
