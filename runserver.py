@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 __author__ = 'florije'
 
-from app import app
+from app import app as application
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8010, debug=False)
+    application.run(host='0.0.0.0', port=8010, debug=False)  # 必须有application
