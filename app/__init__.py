@@ -14,15 +14,19 @@ print gunicorn.__version__
 app = Flask(__name__)
 
 # handler = RotatingFileHandler('foo.log', maxBytes=10000, backupCount=1)  # TimedRotatingFileHandler
-handler = TimedRotatingFileHandler('logs/foo.log', when='midnight', interval=1)
-handler.setLevel(logging.INFO)
-app.logger.addHandler(handler)
+# handler = TimedRotatingFileHandler('logs/foo.log', when='midnight', interval=1)
+# handler.setLevel(logging.INFO)
+# app.logger.addHandler(handler)
 
 
 @app.route('/')
 def hello_world():
-    app.logger.info('Info')
-    return gunicorn.__version__
+    res = '12345'
+    # try:
+    #     app.logger.warn('Info')
+    # except Exception as e:
+    #     res = e.message
+    return res
 
 
 @app.route('/favicon.ico')
