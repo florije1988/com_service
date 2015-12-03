@@ -15,6 +15,8 @@ print gunicorn.__version__
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app)
 
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqldb://scott:tiger@localhost/foo'
+
 # handler = RotatingFileHandler('foo.log', maxBytes=10000, backupCount=1)  # TimedRotatingFileHandler
 handler = TimedRotatingFileHandler('logs/com_service.log', when='midnight', interval=1)
 handler.setLevel(logging.INFO)
