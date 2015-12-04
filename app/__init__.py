@@ -20,7 +20,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqldb://poetry:poetry@45.56.64.
 # handler = RotatingFileHandler('foo.log', maxBytes=10000, backupCount=1)  # TimedRotatingFileHandler
 handler = TimedRotatingFileHandler('logs/com_service.log', when='midnight', interval=1)
 handler.setLevel(logging.INFO)
-app.logger.addHandler(handler)
+app.logger.addHandler(handler)  # 注册
 
 
 @app.route('/')
