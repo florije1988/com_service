@@ -9,18 +9,58 @@ from flask import Flask, send_from_directory
 from werkzeug.contrib.fixers import ProxyFix
 from redis import Redis
 from celery import Celery
+from flask_sqlalchemy import SQLAlchemy
 
 print gunicorn.__version__
+
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqldb://poetry:poetry@45.56.64.124/foo'
+if os.environ.get('DATABASE_URL') is None:
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
+else:
+    SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
+
+app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
 # handler = RotatingFileHandler('foo.log', maxBytes=10000, backupCount=1)  # TimedRotatingFileHandler
 handler = TimedRotatingFileHandler('logs/com_service.log', when='midnight', interval=1)
 handler.setLevel(logging.INFO)
 app.logger.addHandler(handler)  # 注册
+
+db = SQLAlchemy(app)
+
+
+class BaseModel(db.Model):
+    """
+    Model基类
+    """
+    __abstract__ = True
+
+    id = db.Column(db.Integer, primary_key=True)
+    create_time = db.Column(db.DateTime(), default=db.func.datetime('now', 'localtime'))  # db.func.now()
+    update_time = db.Column(db.DateTime(), default=db.func.datetime('now', 'localtime'),
+                            onupdate=db.func.datetime('now', 'localtime'))
+
+
+class ModelMixin(object):
+    """
+    Model拓展类
+    """
+    def __repr__(self):
+        return unicode(self.__dict__)
+
+
+class UserModel(BaseModel, ModelMixin):
+    """
+    用户模型
+    """
+    __tablename__ = 'users'
+
+    name = db.Column(db.String(6), unique=False, nullable=False)
 
 
 @app.route('/')
@@ -34,6 +74,11 @@ def hello_world():
     current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S %Z')
     app.logger.warn(current_time)
     return current_time
+
+
+@app.route('/users')
+def get_user_list():
+    return "user_list"
 
 
 @app.route('/favicon.ico')
