@@ -8,6 +8,7 @@ from logging.handlers import TimedRotatingFileHandler
 from flask import Flask, send_from_directory
 from werkzeug.contrib.fixers import ProxyFix
 from redis import Redis
+from flask_redis import FlaskRedis
 from celery import Celery
 from flask_sqlalchemy import SQLAlchemy
 
@@ -25,6 +26,8 @@ else:
 
 app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+app.config['REDIS_URL'] = "redis://localhost:6379/0"
+
 
 # handler = RotatingFileHandler('foo.log', maxBytes=10000, backupCount=1)  # TimedRotatingFileHandler
 handler = TimedRotatingFileHandler('logs/com_service.log', when='midnight', interval=1)
@@ -32,6 +35,7 @@ handler.setLevel(logging.INFO)
 app.logger.addHandler(handler)  # 注册
 
 db = SQLAlchemy(app)
+redis_store = FlaskRedis(app)
 
 
 class BaseModel(db.Model):
@@ -73,6 +77,10 @@ def hello_world():
     import datetime
     current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S %Z')
     app.logger.warn(current_time)
+    redis_store.set('name', 'fuboqing')
+    res = redis_store.get('name', 'Not Set')
+    if res:
+        return res
     return current_time
 
 
