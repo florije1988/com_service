@@ -45,9 +45,9 @@ class BaseModel(db.Model):
     __abstract__ = True
 
     id = db.Column(db.Integer, primary_key=True)
-    create_time = db.Column(db.DateTime(), default=db.func.datetime('now', 'localtime'))  # db.func.now()
-    update_time = db.Column(db.DateTime(), default=db.func.datetime('now', 'localtime'),
-                            onupdate=db.func.datetime('now', 'localtime'))
+    # create_time = db.Column(db.DateTime(), default=db.func.datetime('now', 'localtime'))  # db.func.now()
+    # update_time = db.Column(db.DateTime(), default=db.func.datetime('now', 'localtime'),
+    #                         onupdate=db.func.datetime('now', 'localtime'))
 
 
 class ModelMixin(object):
@@ -66,6 +66,9 @@ class UserModel(BaseModel, ModelMixin):
 
     name = db.Column(db.String(6), unique=False, nullable=False)
 
+    def __init__(self, name):
+        self.name = name
+
 
 @app.route('/')
 def hello_world():
@@ -77,8 +80,17 @@ def hello_world():
     import datetime
     current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S %Z')
     app.logger.warn(current_time)
-    redis_store.set('name', 'fuboqing')
-    res = redis_store.get('name', 'Not Set')
+    try:
+        redis_store.set('name', 'fuboqing')
+        res = redis_store.get('name')
+    except Exception as e:
+        res = e.message
+    try:
+        new_user = UserModel(name="florije")
+        db.session.add(new_user)
+        db.session.commit()
+    except Exception as e:
+        res = e.message
     if res:
         return res
     return current_time
