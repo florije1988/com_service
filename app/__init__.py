@@ -28,7 +28,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['REDIS_URL'] = "redis://localhost:6379/0"
 
-
 # handler = RotatingFileHandler('foo.log', maxBytes=10000, backupCount=1)  # TimedRotatingFileHandler
 handler = TimedRotatingFileHandler('logs/com_service.log', when='midnight', interval=1)
 handler.setLevel(logging.INFO)
@@ -54,6 +53,7 @@ class ModelMixin(object):
     """
     Model拓展类
     """
+
     def __repr__(self):
         return unicode(self.__dict__)
 
@@ -111,6 +111,11 @@ def get_blockpath_result(number):
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
+
+@app.errorhandler(404)
+def not_found(error):
+    return send_from_directory(os.path.join(app.root_path, 'static'), '404.jpg', mimetype='image/jpeg')
 
 # if __name__ == '__main__':
 #     app.run(host='0.0.0.0', port=8010, debug=False)
