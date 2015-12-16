@@ -5,7 +5,7 @@ import os
 import logging
 import gunicorn
 from logging.handlers import TimedRotatingFileHandler
-from flask import Flask, send_from_directory
+from flask import Flask, send_from_directory, send_file
 from werkzeug.contrib.fixers import ProxyFix
 from redis import Redis
 from flask_redis import FlaskRedis
@@ -99,6 +99,12 @@ def hello_world():
 @app.route('/users')
 def get_user_list():
     return "user_list"
+
+
+@app.route('/blockpath/<number>')
+def get_blockpath_result(number):
+    return send_from_directory(os.path.join(app.root_path, 'static/imgs/world{chapter}'.format(chapter=number[0:2])),
+                               '{name}.PNG'.format(name=number), mimetype='image/png')
 
 
 @app.route('/favicon.ico')
